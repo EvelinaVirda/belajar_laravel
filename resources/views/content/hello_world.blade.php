@@ -51,8 +51,14 @@
                 @endif
             <div class="col-md-6">
                 <h4>{{$item->dc_title}}</h4>
-                <h4 data-id="{{$item->dc_id}}" class="subheading">{{$item->dc_subtitle}}</h4>
-                <p class="text-muted">{{$item->dc_isi}}</p>
+                    <div id="bungkus_subtitle-{{$item->dc_id}}">
+                        <h4 id="subtitle-{{$item->dc_id}}" data-id="{{$item->dc_id}}" class="subheading">{{$item->dc_subtitle}}</h4>
+                    </div>
+                    <div id="bungkus_button_simpan-{{$item->dc_id}}">
+                        <div id="button_simpan-{{$item->dc_id}}" class="button_simpan" data-id="{{$item->dc_id}}"></div>
+                    </div>
+                    <div class="isi_subtitle-{{$item->dc_id}}"></div>
+                    <p class="text-muted">{{$item->dc_isi}}</p>
             </div>
                 @if ($position == false)
                     <div class="col-md-6 how-img">
@@ -65,10 +71,55 @@
 </div>
 <script>
     $(document).ready(function(){
-        $('.subheading').click(function(){
+        $("body").on("click", ".subheading", function(){
             var id = $(this).attr("data-id");
-            console.log("id",id);
+            $("#subtitle-"+id).html('');
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                url: '{{route("get_value_subtitle")}}',
+                method: "POST",
+                data: {
+                    id_content:id,
+                },
+                success: function(response) {
+                    // console.log("ok", response.value_subtitle[0].dc_id);
+                    $("#button_simpan-"+id).html(`<button class="btn btn-primary btn-sm simpan">simpan</buton>`);
+                    $(".isi_subtitle-"+id).html(`<textarea class="textarea_subtitle" data-id="`+ response.value_subtitle[0].dc_id+`" id="textarea_subtitle`+ response.value_subtitle[0].dc_id+`" name="subtitle" rows="4" cols="50">`+ response.value_subtitle[0].dc_subtitle+`</textarea>`);
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText + " Error :" + status + " Error2 :" + error);
+                }
+            });
         });
+        $("body").on("click", ".button_simpan", function(){
+            var id = $(this).attr("data-id");
+            console.log(id);
+            isi_subtitle = $("textarea#textarea_subtitle"+id).val();
+            console.log('isi subtitle',isi_subtitle);
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                url: '{{route("update_value_subtitle")}}',
+                method: "POST",
+                data: {
+                    id_content:id,
+                    isi_subtitle:isi_subtitle,
+                },
+                success: function(response) {
+                    console.log("terupdate",response);
+                    $("#button_simpan-"+id).remove();
+                    $("#bungkus_button_simpan-"+id).append(`<div id="button_simpan-`+id+`" class="button_simpan" data-id="`+id+`"></div>`)
+                    $("#textarea_subtitle"+id).remove();
+                    $("#bungkus_subtitle-"+id).html(`<h4 id="subtitle-`+id+`" data-id="`+id+`" class="subheading">`+isi_subtitle+`</h4>`);
+                },
+                error: function(request, status, error) {
+                    alert(request.responseText + " Error :" + status + " Error2 :" + error);
+                }
+            });
+        })
     });
 </script>
 @endsection

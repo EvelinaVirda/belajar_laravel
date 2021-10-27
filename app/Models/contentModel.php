@@ -14,4 +14,12 @@ class contentModel extends Model
     {
         return DB::SELECT("SELECT * from dat_content");
     }
+    public function get_value_subtitle($id)
+    {
+        return DB::SELECT("SELECT dc_id, dc_subtitle from dat_content where dc_id = '$id'");
+    }
+    public function update_value_subtitle($id, $value)
+    {
+        return DB::UPDATE("UPDATE dat_content set dc_subtitle = '$value' where dc_id = '$id'");
+    }
 }
