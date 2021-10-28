@@ -32,7 +32,6 @@
 </style>
 <div class="container">
     <div class="how-section1">
-        {{-- <button id="button_test" class="btn btn-primary" style="margin-top:10px">button</button> --}}
         @foreach ($data_content as $item)    
         <div class="row">
 
@@ -84,7 +83,6 @@
                     id_content:id,
                 },
                 success: function(response) {
-                    // console.log("ok", response.value_subtitle[0].dc_id);
                     $("#button_simpan-"+id).html(`<button class="btn btn-primary btn-sm simpan">simpan</buton>`);
                     $(".isi_subtitle-"+id).html(`<textarea class="textarea_subtitle" data-id="`+ response.value_subtitle[0].dc_id+`" id="textarea_subtitle`+ response.value_subtitle[0].dc_id+`" name="subtitle" rows="4" cols="50">`+ response.value_subtitle[0].dc_subtitle+`</textarea>`);
                 },
