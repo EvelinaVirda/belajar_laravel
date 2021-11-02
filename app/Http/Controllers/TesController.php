@@ -33,4 +33,21 @@ class TesController extends Controller
         else $result['success'] = true;
         return $result;
     }
+
+    public function update_image(Request $request)
+    {
+        $request->validate([
+            'gambar' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        $imageName = time() . '.' . $request->gambar->extension();
+
+        $request->gambar->move(public_path('gambar'), $imageName);
+
+        /* Store $imageName name in DATABASE from HERE */
+
+        return back()
+            ->with('success', 'You have successfully upload image.')
+            ->with('image', $imageName);
+    }
 }

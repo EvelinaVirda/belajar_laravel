@@ -1,9 +1,6 @@
 @extends('template.main')
 
 @section('isi_kontent')
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <style>
     .how-section1{
         margin-top:-10%;
@@ -44,9 +41,38 @@
                 }
             @endphp
                 @if ($position == true)
-                    <div class="col-md-6 how-img">
-                        <img src="{{$item->dc_image}}" class="rounded-circle img-fluid" alt=""/>
+                <div class="col-md-6 how-img">
+                        <i style="font-size:2em; position: absolute;" data-id="{{$item->dc_id}}" class="bi bi-camera"></i>
+                        @if ($message = Session::get('success'))
+                            <div class="alert alert-success alert-block">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <strong>{{ $message }}</strong>
+                            </div>
+                            <img src="gambar/{{ Session::get('image') }}" class="rounded-circle img-fluid" alt="">    
+                        @else
+                            @php
+                            $str = $item->dc_image;
+                            $pattern = "/http/i";
+                            $img_name = preg_match_all($pattern, $str);
+                            if($img_name > 0){
+                                echo "<img src='$item->dc_image' class='rounded-circle img-fluid' alt=''/>";
+                            }else{
+                                echo "<img src='gambar/Session::get('image')' class='rounded-circle img-fluid' alt=''/>";
+                            }
+                            @endphp
+                        @endif
                     </div>            
+                @endif
+
+                @if (count($errors) > 0)
+                    <div class="alert alert-danger">
+                        <strong>Whoops!</strong> There were some problems with your input.
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
             <div class="col-md-6">
                 <h4>{{$item->dc_title}}</h4>
@@ -61,12 +87,57 @@
             </div>
                 @if ($position == false)
                     <div class="col-md-6 how-img">
-                        <img src="{{$item->dc_image}}" class="rounded-circle img-fluid" alt=""/>
+                        <i style="font-size:2em; position: absolute; padding-right:3px" data-id="{{$item->dc_id}}" class="bi bi-camera"></i>
+                        @if ($message = Session::get('success'))
+                            <div class="alert alert-success alert-block">
+                                <button type="button" class="close" data-dismiss="alert">×</button>
+                                    <strong>{{ $message }}</strong>
+                            </div>
+                            <img src="gambar/{{ Session::get('image') }}" class="rounded-circle img-fluid" alt="">    
+                        @else
+                            @php
+                            $str = $item->dc_image;
+                            $pattern = "/http/i";
+                            $img_name = preg_match_all($pattern, $str);
+                            if($img_name > 0){
+                                echo "<img src='$item->dc_image' class='rounded-circle img-fluid' alt=''/>";
+                            }else{
+                                echo "<img src='gambar/Session::get('image')' class='rounded-circle img-fluid' alt=''/>";
+                            }
+                            @endphp
+                        @endif
                     </div>            
                 @endif
         </div>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Change Image</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <form method="POST" action="{{route('update_image')}}" enctype="multipart/form-data" id="myform">
+                    @csrf
+                    <div class='preview'>
+                        <img src="" id="img" width="100" height="100">
+                    </div>
+                    <div>
+                        <input type="file" data-id="{{$item->dc_id}}" class="files" id="file_{{$item->dc_id}}" name="gambar" />
+                        <input type="submit" class="button but_upload" value="Upload" id="but_upload">
+                    </div>
+                </form>
+                <div class="modal-footer">
+                </div>
+            </div>
+            </div>
+        </div>
         @endforeach
     </div>
+    <!-- Button trigger modal -->
+    <!-- Modal -->
+    
 </div>
 <script>
     $(document).ready(function(){
@@ -117,7 +188,45 @@
                     alert(request.responseText + " Error :" + status + " Error2 :" + error);
                 }
             });
-        })
+        });
+        $("body").on("click", ".bi-camera", function(){
+            $("#exampleModal").modal("show");
+            var id = $(this).attr("data-id");
+            console.log("id gambar",id);
+                // $(".but_upload").on("click", function(e){
+                //     e.preventDefault();
+                //     var fd = new FormData();
+                //     var files = $(".files")[0].files;
+                //     // var files = $(".file")[0].files;
+                //     console.log("id", id);                   
+                    
+                //     console.log("file", files);
+                //     if(files.length > 0 ){
+                //     fd.append('gambar',files[0]);
+                //     $.ajax({
+                //         headers: {
+                //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                //         },
+                //         url: '{{route("update_image")}}',
+                //         type: 'POST',
+                //         data: fd,
+                //         contentType: false,
+                //         processData: false,
+                //         success: function(response){
+                //             if(response != 0){
+                //                 console.log("ok");
+                //                 // $("#img").attr("src",response); 
+                //                 // $(".preview img").show(); // Display image element
+                //             }else{
+                //                 alert('file not uploaded');
+                //             }
+                //         },
+                //     });
+                //     }else{
+                //         alert("Please select a file.");
+                //     }
+            // });
+        });
     });
 </script>
 @endsection

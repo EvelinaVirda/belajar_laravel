@@ -22,6 +22,7 @@ Route::get('/hello_world', 'App\Http\Controllers\TesController@hello_world')->na
 Route::get('/list_village', 'App\Http\Controllers\villageController@listVillage')->name('hello_world');
 Route::post('/get_value_subtitle', 'App\Http\Controllers\TesController@get_value_subtitle')->name('get_value_subtitle');
 Route::post('/update_value_subtitle', 'App\Http\Controllers\TesController@update_value_subtitle')->name('update_value_subtitle');
+Route::post('/update_image', 'App\Http\Controllers\TesController@update_image')->name('update_image');
 
 // Route::get('/hello_world', [TesController::class, 'hello_world']);
 
